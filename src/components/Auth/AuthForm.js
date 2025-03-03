@@ -2,6 +2,7 @@ import { useState, useRef,useContext } from 'react';
 
 import AuthContext from '../../Store/auth-context';
 import classes from './AuthForm.module.css';
+import { useHistory } from 'react-router-dom';
 
 const AuthForm = () => {
 
@@ -9,6 +10,7 @@ const AuthForm = () => {
   const passwordInputRef = useRef();
 
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
   
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading]=useState(false);
@@ -26,11 +28,11 @@ const AuthForm = () => {
     let url;
     if (isLogin) {
       // Login Logic
-      url='https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBm4Jo2y_ZzaF0YhlWDUHHkn6XMAyMZ0LI'
+      url=`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_KEY}`;
 
     } else {
       // Signup Logic
-      url ="https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBm4Jo2y_ZzaF0YhlWDUHHkn6XMAyMZ0LI"
+      url =`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_KEY}`;
     }
 
     fetch(url, {
@@ -49,6 +51,7 @@ const AuthForm = () => {
       if(res.ok) {
         return res.json();
         
+        
       }else{
           return res.json().then((data) => {
             let errorMessage = 'Authentication failed!';
@@ -60,6 +63,7 @@ const AuthForm = () => {
       }
     }).then((data) => {
       authCtx.login(data.idToken);
+      history.replace('/');
     }).catch((err) => {
       alert(err.message);
     });
